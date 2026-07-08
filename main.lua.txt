@@ -2225,40 +2225,25 @@ end, function()
     local count = 0
 
     for i, log in ipairs(logs) do
-        if not log.GenScript then 
+        if not log.Remote then 
             continue 
         end
 
-        local isLocal = false
-        if log.Remote then
-            if log.Remote:IsA("BindableEvent") or log.Remote:IsA("BindableFunction") then
-                isLocal = true
-            end
-        elseif log.method == "fire" or log.method == "invoke" then
-            isLocal = true
-        end
-
-        if isLocal then
+        if log.Remote:IsA("BindableEvent") or log.Remote:IsA("BindableFunction") then
             continue
         end
 
-        count += 1
-        
-        local remoteName = log.Remote and log.Remote.Name or "Unknown"
-        local className = "Unknown Class"
-        
-        if log.Remote then
-            className = log.Remote.ClassName
-        else
-            if log.method == "fireserver" or log.method == "onclientevent" then
-                className = "RemoteEvent"
-            elseif log.method == "invokeserver" or log.method == "onclientinvoke" then
-                className = "RemoteFunction"
-            end
+        count = count + 1
+
+        if log.GenScript == "-- Generating, please wait...\n-- (If this message persists, the remote args are likely extremely long)" then
+            log.GenScript = genScript(log.Remote, log.args)
         end
 
+        local remoteName = log.Remote.Name or "Unknown"
+        local className = log.Remote.ClassName or "Unknown Class"
+
         table.insert(dump, string.format("[%d] %s (%s)", count, remoteName, className))
-        table.insert(dump, "Remote Path: " .. (log.Remote and v2s(log.Remote) or "N/A"))
+        table.insert(dump, "Remote Path: " .. v2s(log.Remote))
         table.insert(dump, "Method: " .. (log.method or "unknown"))
         table.insert(dump, "----------------------------------------")
         table.insert(dump, log.GenScript)
@@ -2279,7 +2264,6 @@ end, function()
         warn("SimpleSpy Dump Error: " .. tostring(err))
     end
 end)
-
 
 --- Attempts to decompile the source script
 newButton("Decompile",
