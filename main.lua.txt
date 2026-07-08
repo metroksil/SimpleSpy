@@ -280,7 +280,7 @@ local prevTables = {}
 --- holds logs (for deletion)
 local remoteLogs = {}
 --- used for hookfunction
-getgenv().SIMPLESPYCONFIG_MaxRemotes = 1000
+getgenv().SIMPLESPYCONFIG_MaxRemotes = 7000
 local indent = 4
 local scheduled = {}
 local schedulerconnect
